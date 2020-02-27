@@ -110,12 +110,8 @@ $(document).ready(function() {
     }
     
 
-
-
-
-
     $('#recognize').click(function() {
-        document.getElementById("info").innerHTML = "Begin to process!"
+        
         reg_expression = "";
         if (currentTabIndex == 1 )
             reg_expression = document.getElementById("reg_expression1").value
@@ -140,7 +136,7 @@ $(document).ready(function() {
             return ;
         }
  
-         
+        document.getElementById("info").innerHTML = "Begin to process!"
         $.getJSON($SCRIPT_ROOT + '_recognize', {
             reg_expression  :   reg_expression,
             reg_text        :   reg_text
@@ -165,6 +161,10 @@ $(document).ready(function() {
 
 
            document.getElementById("info").innerHTML = data['result']['errorMessage'].toString() ;
+           if(data['result']['errorMessage'].toString().length <= 1)
+           {
+            document.getElementById("info").innerHTML = "Finish processing!"
+           }
             // document.getElementById("reg_result").innerHTML = data['result']['result'].toString() 
         });
 
@@ -250,7 +250,9 @@ function bindPaste(){
                 reg_expression = document.getElementById("reg_expression2").value
             else if(currentTabIndex == 3)
                 reg_expression = document.getElementById("reg_expression3").value
-            
+                
+                
+            document.getElementById("info").innerHTML = "Begin to process!"
             $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
                 reg_expression  :   reg_expression,
                 base64_str      :  base64_str.slice(base64_str.search("base64,")+7 ,-1)
@@ -275,7 +277,11 @@ function bindPaste(){
                }
     
     
-               document.getElementById("info").innerHTML = "Finish to process!"
+               document.getElementById("info").innerHTML = data['result']['errorMessage'].toString() ;
+               if(data['result']['errorMessage'].toString().length <= 1)
+               {
+                document.getElementById("info").innerHTML = "Finish processing!"
+               }
             });
 
 		}
