@@ -4,6 +4,8 @@ $(document).ready(function() {
     // var reg_text = $('#reg_text');
     // var reg_expression = $('#reg_expression');
 
+    var reg_expression = ""
+
     //http://jsfiddle.net/8mdX4/1211/
     function getTextNodesIn(node) {
         var textNodes = [];
@@ -88,7 +90,7 @@ $(document).ready(function() {
     }
     
     function selectAndHighlightRange(id, start, end, color) {
-        setSelectionRange(document.getElementById(id), start+1, end+1);
+        setSelectionRange(document.getElementById(id), start, end);
         highlight(color);
     }
     
@@ -99,7 +101,8 @@ $(document).ready(function() {
 
     $('#recognize').click(function() {
         document.getElementById("info").innerHTML = "Begin to process!"
-        reg_expression = document.getElementById("reg_expression1").value
+        if (reg_expression.length == 0 )
+            reg_expression = document.getElementById("reg_expression1").value
         reg_text = document.getElementById("reg_text").value;
         
 
@@ -140,7 +143,7 @@ $(document).ready(function() {
            }
 
 
-           document.getElementById("info").innerHTML = "Finish to process!"
+           document.getElementById("info").innerHTML = data['result']['errorMessage'].toString() ;
             // document.getElementById("reg_result").innerHTML = data['result']['result'].toString() 
         });
 
@@ -160,6 +163,21 @@ $(document).ready(function() {
         // }
         // });
     });
+
+
+
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var target = $(e.target).attr("reg-id") // activated tab
+          
+          reg_expression = document.getElementById(target).value
+          if (len(reg_expression) == 0 )
+          {
+              alert("current regular expression is null?");
+          }
+      });
+
+
 
 
 //https://blog.csdn.net/dongyuxu342719/article/details/83754352
@@ -209,8 +227,11 @@ function bindPaste(){
 			$("#jietuImg").attr("src",base64_str);
 			//显示div
             $("#jietuWrap").css("display","block");
+            if (len(reg_expression) == 0 )
+            {
+                reg_expression = document.getElementById("reg_expression1").value
+            }
             
-            reg_expression = document.getElementById("reg_expression1").value
             $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
                 reg_expression  :   reg_expression,
                 base64_str      :  base64_str.slice(base64_str.search("base64,")+7 ,-1)

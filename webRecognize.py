@@ -49,9 +49,9 @@ def search(regex, text):
 
         # matches.groupdict
         dir1 = ''
-        if matches.group('dir1') is None :
+        if not("dir1" in gd)  or matches.group('dir1') is None :
             # messagebox.showinfo(message='dir1 is none')
-            errorMessage += "dir1 is none"
+            errorMessage += "dir1 is none. "
         else:
             dir1 = matches.group('dir1')
             # resultList.append({'start': matches.start(), 'end': matches.end(), 'index' : i})
@@ -60,17 +60,17 @@ def search(regex, text):
             
 
         degrees = ''
-        if matches.group('degrees') is None :
+        if not("degrees" in gd)  or matches.group('degrees') is None :
             # messagebox.showinfo(message='degrees is none')
-            errorMessage += "degrees is none"
+            errorMessage += "degrees is none. "
         else:
             degrees = matches.group('degrees')
             # g = degrees
             # resultList.append({'start': g.start(), 'end': g.end(), 'index' : i})
   
         minutes = ''
-        if matches.group('minutes') is None :
-            errorMessage += "minutes is none"
+        if not("minutes" in gd)  or matches.group('minutes') is None :
+            errorMessage += "minutes is none. "
         else:
             minutes = matches.group('minutes')
             # g = minutes
@@ -80,16 +80,16 @@ def search(regex, text):
 
 
         dir2 = ''
-        if matches.group('dir2') is None :
-            errorMessage += "dir2 is none"
+        if not("dir2" in gd)  or matches.group('dir2') is None :
+            errorMessage += "dir2 is none. "
         else:
             dir2 = dirDict[matches.group('dir2')]
             # g = dir2
             # resultList.append({'start': g.start(), 'end': g.end(), 'index' : i})
 
         feet = ''
-        if matches.group('feet') is None :
-           errorMessage += "feet is none"
+        if not("feet" in gd)  or matches.group('feet') is None :
+           errorMessage += "feet is none. "
         else:
             feet = matches.group('feet')
             # g = feet
@@ -97,7 +97,7 @@ def search(regex, text):
 
 
         result = result + "DD " + dir1 + " " + degrees + "-" + minutes + "-" + seconds + " " + dir2 + " " + feet + '\n'
-    return {'result' : result, 'highlight' : resultList, 'reg_text': text}
+    return {'result' : result, 'highlight' : resultList, 'reg_text': text, 'errorMessage':errorMessage}
 
 
 
