@@ -243,10 +243,13 @@ function bindPaste(){
 			$("#jietuImg").attr("src",base64_str);
 			//显示div
             $("#jietuWrap").css("display","block");
-            if (len(reg_expression) == 0 )
-            {
+            reg_expression = "";
+            if (currentTabIndex == 1 )
                 reg_expression = document.getElementById("reg_expression1").value
-            }
+            else if(currentTabIndex == 2)
+                reg_expression = document.getElementById("reg_expression2").value
+            else if(currentTabIndex == 3)
+                reg_expression = document.getElementById("reg_expression3").value
             
             $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
                 reg_expression  :   reg_expression,
