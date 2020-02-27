@@ -171,7 +171,7 @@ $(document).ready(function() {
         var target = $(e.target).attr("reg-id") // activated tab
           
           reg_expression = document.getElementById(target).value
-          if (len(reg_expression) == 0 )
+          if (reg_expression.length == 0 )
           {
               alert("current regular expression is null?");
           }
