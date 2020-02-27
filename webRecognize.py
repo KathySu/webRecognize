@@ -118,6 +118,7 @@ def recognize():
 
 @app.route('/_recognizeImage')
 def _recognizeImage():
+    print ("_recognizeImage\n")
     reg_expression = request.args.get('reg_expression', '')
     base64_str = request.args.get('base64_str', '')
     base64_byte = base64_str.encode()
@@ -132,9 +133,9 @@ def _recognizeImage():
 
     img = Image.open(io.BytesIO(image))
     img.save(imagePath, 'png')
-
+    print ("begin to recognize\n")
     text = pytesseract.image_to_string(Image.open(imagePath))
-
+    print ("recognize result", text)
     result = search(reg_expression, text)
     return jsonify(result = result)
 
