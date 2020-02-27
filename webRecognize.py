@@ -138,5 +138,19 @@ def _recognizeImage():
     result = search(reg_expression, text)
     return jsonify(result = result)
 
+
+@app.route('/reg1')
+def reg1():
+    return jsonify(result = "\W+(?P<dir1>North|South|West|East)\W+(?P<degrees>\d+)\W+degrees\W+(?P<minutes>\d+)\W+minutes\W+(?P<dir2>North|South|West|East)(?:.|\n)*?distance of\W+(?P<feet>\d+.?\d+)")
+
+
+@app.route('/reg2')
+def reg2():
+    return jsonify(result = "north")
+
+@app.route('/reg3')
+def reg3():
+    return jsonify(result = "east")
+
 if __name__ == '__main__':
     app.run(debug=True)

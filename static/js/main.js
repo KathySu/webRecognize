@@ -6,6 +6,28 @@ $(document).ready(function() {
 
     var reg_expression = ""
 
+    $.getJSON($SCRIPT_ROOT + 'reg1', {
+    }, function(data){
+        var r = data['result'].toString() ;
+        reg_expression = r
+        document.getElementById("reg_expression1").innerHTML = r;
+    });
+
+    $.getJSON($SCRIPT_ROOT + 'reg2', {
+    }, function(data){
+        var r = data['result'].toString() ;
+        reg_expression = r
+        document.getElementById("reg_expression2").innerHTML = r;
+    });
+
+    $.getJSON($SCRIPT_ROOT + 'reg3', {
+    }, function(data){
+        var r = data['result'].toString() ;
+        reg_expression = r
+        document.getElementById("reg_expression3").innerHTML = r;
+    });
+
+
     //http://jsfiddle.net/8mdX4/1211/
     function getTextNodesIn(node) {
         var textNodes = [];
