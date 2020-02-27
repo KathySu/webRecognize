@@ -87,9 +87,9 @@ $(document).ready(function() {
         }
     }
     
-    function selectAndHighlightRange(id, start, end) {
+    function selectAndHighlightRange(id, start, end, color) {
         setSelectionRange(document.getElementById(id), start+1, end+1);
-        highlight("yellow");
+        highlight(color);
     }
     
 
@@ -128,13 +128,14 @@ $(document).ready(function() {
                 r = r.replace('\n','<br/>');
             }
             document.getElementById("reg_result").innerHTML = reg_text + '<br/>' + r;
-
+            var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
            for (var h in data['result']['highlight'])
            {
             // alert(data['result']['highlight'][h].start.toString() )
             selectAndHighlightRange('reg_result',
             parseInt(data['result']['highlight'][h].start), 
-            parseInt(data['result']['highlight'][h].end)
+            parseInt(data['result']['highlight'][h].end),
+            colors[h%colors.length]
             )
            }
 
