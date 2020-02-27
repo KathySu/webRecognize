@@ -162,7 +162,7 @@ $(document).ready(function() {
     });
 
 
-
+//https://blog.csdn.net/dongyuxu342719/article/details/83754352
     //绑定粘贴事件 Ctrl+V
 bindPaste();
 //绑定粘贴事件
