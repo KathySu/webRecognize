@@ -162,4 +162,72 @@ $(document).ready(function() {
     });
 
 
+
+    //绑定粘贴事件 Ctrl+V
+bindPaste();
+//绑定粘贴事件
+function bindPaste(){
+	//定义变量存储获取的图片内容
+	var blob;
+	//获取body对象
+	var body = document.getElementsByTagName("body");
+	//定义body标签绑定的粘贴事件处理函数
+	var fun=function(e){
+		// //获取clipboardData对象
+		// var data=e.clipboardData;
+		// //获取图片内容
+        // blob=data.items[0].getAsFile();
+        
+        var items = (event.clipboardData  || event.originalEvent.clipboardData).items;
+        console.log(JSON.stringify(items)); // will give you the mime types
+        // find pasted image among pasted items
+        var blob = null;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") === 0) {
+            blob = items[i].getAsFile();
+            }
+        }
+
+        // // load image if there is a pasted image
+        // if (blob !== null) {
+        //     var reader = new FileReader();
+        //     reader.onload = function(event) {
+        //     console.log(event.target.result); // data url!
+        //     document.getElementById("pastedImage").src = event.target.result;
+        //     };
+        //     reader.readAsDataURL(blob);
+        // }
+		//判断是不是图片，最好通过文件类型判断
+		var isImg=(blob&&1)||-1;
+        var reader=new FileReader();		
+        
+        //文件读取完成时触发
+		reader.onload=function(event){
+			//获取base64流
+			var base64_str=event.target.result;
+			//div中的img标签src属性赋值，可以直接展示图片
+			$("#jietuImg").attr("src",base64_str);
+			//显示div
+            $("#jietuWrap").css("display","block");
+            
+            $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
+                base64_str  :   base64_str
+                
+            }, function(data){
+                alert(data['result'].toString())
+            });
+
+		}
+		if(isImg>=0){
+			//将文件读取为 DataURL
+			reader.readAsDataURL(blob);
+		}
+
+	}
+	//通过body标签绑定粘贴事件，注意有些标签绑定粘贴事件可能出错
+	body[0].removeEventListener('paste',fun);
+	body[0].addEventListener('paste',fun);
+}
+
+
 })

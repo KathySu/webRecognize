@@ -100,7 +100,6 @@ def index():
 
 @app.route('/_recognize')
 def recognize():
-    x = '\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+(?P<minutes>\d+)\W+minutes?\W+[(?P<seconds>\d+)\W+seconds?\W+]?(?P<dir2>South|North|West|East)(.|\n)*?(?P<distance>\d+.\d+)\W+feet'
     reg_expression = request.args.get('reg_expression', '')
     reg_text = request.args.get('reg_text', '')
     
@@ -108,7 +107,13 @@ def recognize():
 
     return jsonify(result = result)
 
+@app.route('/_recognizeImage')
+def _recognizeImage():
+    base64_str = request.args.get('base64_str', '')
+    
+    # result = search(reg_expression, reg_text)
 
+    return jsonify(result = base64_str)
 
 if __name__ == '__main__':
     app.run(debug=True)
