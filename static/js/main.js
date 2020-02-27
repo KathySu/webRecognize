@@ -1,29 +1,22 @@
 $(document).ready(function() {
 
-
-    // var reg_text = $('#reg_text');
-    // var reg_expression = $('#reg_expression');
-
-    var reg_expression = ""
+    var currentTabIndex = 1
 
     $.getJSON($SCRIPT_ROOT + 'reg1', {
     }, function(data){
         var r = data['result'].toString() ;
-        reg_expression = r
         document.getElementById("reg_expression1").innerHTML = r;
     });
 
     $.getJSON($SCRIPT_ROOT + 'reg2', {
     }, function(data){
         var r = data['result'].toString() ;
-        reg_expression = r
         document.getElementById("reg_expression2").innerHTML = r;
     });
 
     $.getJSON($SCRIPT_ROOT + 'reg3', {
     }, function(data){
         var r = data['result'].toString() ;
-        reg_expression = r
         document.getElementById("reg_expression3").innerHTML = r;
     });
 
@@ -123,8 +116,14 @@ $(document).ready(function() {
 
     $('#recognize').click(function() {
         document.getElementById("info").innerHTML = "Begin to process!"
-        if (reg_expression.length == 0 )
+        reg_expression = "";
+        if (currentTabIndex == 1 )
             reg_expression = document.getElementById("reg_expression1").value
+        else if(currentTabIndex == 2)
+            reg_expression = document.getElementById("reg_expression2").value
+        else if(currentTabIndex == 3)
+            reg_expression = document.getElementById("reg_expression3").value
+
         reg_text = document.getElementById("reg_text").value;
         
 
@@ -191,12 +190,7 @@ $(document).ready(function() {
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("reg-id") // activated tab
-          
-          reg_expression = document.getElementById(target).value
-          if (reg_expression.length == 0 )
-          {
-              alert("current regular expression is null?");
-          }
+          currentTabIndex = parseInt( target);
       });
 
 
