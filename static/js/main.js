@@ -131,12 +131,12 @@ $(document).ready(function() {
             var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
            for (var h in data['result']['highlight'])
            {
-            // alert(data['result']['highlight'][h].start.toString() )
-            selectAndHighlightRange('reg_result',
-            parseInt(data['result']['highlight'][h].start), 
-            parseInt(data['result']['highlight'][h].end),
-            colors[h%colors.length]
-            )
+                // alert(data['result']['highlight'][h].start.toString() )
+                selectAndHighlightRange('reg_result',
+                parseInt(data['result']['highlight'][h].start), 
+                parseInt(data['result']['highlight'][h].end),
+                colors[h%colors.length]
+                )
            }
 
 
@@ -210,11 +210,32 @@ function bindPaste(){
 			//显示div
             $("#jietuWrap").css("display","block");
             
+            reg_expression = document.getElementById("reg_expression1").value
             $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
-                base64_str  :   base64_str
+                reg_expression  :   reg_expression,
+                base64_str      :  base64_str.slice(base64_str.search("base64,")+7 ,-1)
                 
             }, function(data){
-                alert(data['result'].toString())
+                var r = data['result']['result'].toString() ;
+                var reg_text = data['result']['reg_text'].toString() ;
+                while(r.search('\n') != -1 )
+                {
+                    r = r.replace('\n','<br/>');
+                }
+                document.getElementById("reg_result").innerHTML = reg_text + '<br/>' + r;
+                var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
+               for (var h in data['result']['highlight'])
+               {
+                    // alert(data['result']['highlight'][h].start.toString() )
+                    selectAndHighlightRange('reg_result',
+                    parseInt(data['result']['highlight'][h].start), 
+                    parseInt(data['result']['highlight'][h].end),
+                    colors[h%colors.length]
+                    )
+               }
+    
+    
+               document.getElementById("info").innerHTML = "Finish to process!"
             });
 
 		}

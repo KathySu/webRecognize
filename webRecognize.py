@@ -1,8 +1,17 @@
 # pip3 install flask
 
 import re
+import base64
 from flask import Flask, jsonify, render_template, request
 from datetime import timedelta
+from PIL import Image ,ImageFile
+import io
+import os
+import pytesseract
+# from PIL import ImageTk, ImageGrab, Image
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
@@ -88,7 +97,7 @@ def search(regex, text):
 
 
         result = result + "DD " + dir1 + " " + degrees + "-" + minutes + "-" + seconds + " " + dir2 + " " + feet + '\n'
-    return {'result' : result, 'highlight' : resultList}
+    return {'result' : result, 'highlight' : resultList, 'reg_text': text}
 
 
 
@@ -109,11 +118,25 @@ def recognize():
 
 @app.route('/_recognizeImage')
 def _recognizeImage():
+    reg_expression = request.args.get('reg_expression', '')
     base64_str = request.args.get('base64_str', '')
-    
-    # result = search(reg_expression, reg_text)
+    base64_byte = base64_str.encode()
+    missing_padding = 4 - len(base64_byte) % 4
+    if missing_padding:
+        base64_byte += b'=' * missing_padding
 
-    return jsonify(result = base64_str)
+
+    image = base64.b64decode(base64_byte)    
+
+    imagePath = os.getcwd() + "/temp.png" # Current folder path
+
+    img = Image.open(io.BytesIO(image))
+    img.save(imagePath, 'png')
+
+    text = pytesseract.image_to_string(Image.open(imagePath))
+
+    result = search(reg_expression, text)
+    return jsonify(result = result)
 
 if __name__ == '__main__':
     app.run(debug=True)
