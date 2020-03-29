@@ -127,6 +127,7 @@ def _recognizeImage():
     text = pytesseract.image_to_string(Image.open(imagePath))
     print ("recognize result", text)
     result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text)
+    
     return jsonify(result = result)
 
 
