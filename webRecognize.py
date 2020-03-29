@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 
-dirDict = {'North': 'N', 'South': 'S', 'West': 'W', 'East': 'E'}
+dirDict = {'north': 'N', 'south': 'S', 'west': 'W', 'east': 'E'}
 
 def search(regex, text):
     result = ""
@@ -45,52 +45,53 @@ def search(regex, text):
 
         # matches.groupdict
         dir1 = ''
-        if not("dir1" in gd)  or matches.group('dir1') is None :
-            # messagebox.showinfo(message='dir1 is none')
+        # it will show a messagebox from tkinter 
+        if matches.group('dir1') is None :
             errorMessage += "dir1 is none. "
         else:
-            dir1 = matches.group('dir1')
-            # resultList.append({'start': matches.start(), 'end': matches.end(), 'index' : i})
-       
- 
+            #messagebox.showinfo(message =matches.group("dir1"))
+            dir1 = dirDict[matches.group('dir1').lower()]
             
-
         degrees = ''
-        if not("degrees" in gd)  or matches.group('degrees') is None :
-            # messagebox.showinfo(message='degrees is none')
+        if matches.group('degrees') is None :
             errorMessage += "degrees is none. "
         else:
+            #messagebox.showinfo(message =matches.group("degrees"))
             degrees = matches.group('degrees')
-            # g = degrees
-            # resultList.append({'start': g.start(), 'end': g.end(), 'index' : i})
-  
+
+        
         minutes = ''
-        if not("minutes" in gd)  or matches.group('minutes') is None :
-            errorMessage += "minutes is none. "
-        else:
+        if "minutes" in gd:
+            #messagebox.showinfo(message= matches.group("minutes"))
             minutes = matches.group('minutes')
-            # g = minutes
-            # resultList.append({'start': g.start(), 'end': g.end(), 'index' : i})
+            if minutes is None:
+                minutes = "00"
+        else:
+            #messagebox.showinfo(message ="doesn't have minutes")
+            minutes = "00"
 
-        seconds = "00"
-
+        seconds = ''
+        if "seconds" in gd:
+            #messagebox.showinfo(message= matches.group("seconds"))
+            seconds = matches.group('seconds')
+            if seconds is None:
+                seconds = "00"
+        else:
+            errorMessage += "seconds is none. "
+            seconds = "00"
 
         dir2 = ''
-        if not("dir2" in gd)  or matches.group('dir2') is None :
+        if matches.group('dir2') is None :
             errorMessage += "dir2 is none. "
         else:
-            dir2 = dirDict[matches.group('dir2')]
-            # g = dir2
-            # resultList.append({'start': g.start(), 'end': g.end(), 'index' : i})
+            dir2 = dirDict[matches.group('dir2').lower()]
+            #messagebox.showinfo(message = dir2)
 
         feet = ''
-        if not("feet" in gd)  or matches.group('feet') is None :
-           errorMessage += "feet is none. "
+        if matches.group('feet') is None :
+            errorMessage += "feet is none. "
         else:
             feet = matches.group('feet')
-            # g = feet
-            # resultList.append({'start': g.start(), 'end': g.end(), 'index' : i})
-
 
         result = result + "DD " + dir1 + " " + degrees + "-" + minutes + "-" + seconds + " " + dir2 + " " + feet + '\n'
     return {'result' : result, 'highlight' : resultList, 'reg_text': text, 'errorMessage':errorMessage}
@@ -98,7 +99,6 @@ def search(regex, text):
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/_recognize')
 def recognize():

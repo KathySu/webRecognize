@@ -2,25 +2,6 @@ $(document).ready(function() {
 
     var currentTabIndex = 1
 
-    $.getJSON($SCRIPT_ROOT + 'reg1', {
-    }, function(data){
-        var r = data['result'].toString() ;
-        document.getElementById("reg_expression1").innerHTML = r;
-    });
-
-    $.getJSON($SCRIPT_ROOT + 'reg2', {
-    }, function(data){
-        var r = data['result'].toString() ;
-        document.getElementById("reg_expression2").innerHTML = r;
-    });
-
-    $.getJSON($SCRIPT_ROOT + 'reg3', {
-    }, function(data){
-        var r = data['result'].toString() ;
-        document.getElementById("reg_expression3").innerHTML = r;
-    });
-
-
     //http://jsfiddle.net/8mdX4/1211/
     function getTextNodesIn(node) {
         var textNodes = [];
@@ -229,18 +210,10 @@ function bindPaste(){
 			$("#jietuImg").attr("src",base64_str);
 			//显示div
             $("#jietuWrap").css("display","block");
-            reg_expression = "";
-            if (currentTabIndex == 1 )
-                reg_expression = document.getElementById("reg_expression1").value
-            else if(currentTabIndex == 2)
-                reg_expression = document.getElementById("reg_expression2").value
-            else if(currentTabIndex == 3)
-                reg_expression = document.getElementById("reg_expression3").value
-                
+            
                 
             document.getElementById("info").innerHTML = "Begin to process!"
             $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
-                reg_expression  :   reg_expression,
                 base64_str      :  base64_str.slice(base64_str.search("base64,")+7 ,-1)
                 
             }, function(data){
