@@ -225,30 +225,38 @@ function bindPaste(){
             $.getJSON($SCRIPT_ROOT + '_recognizeImage', {
                 base64_str      :  base64_str.slice(base64_str.search("base64,")+7 ,-1)
                 
-            }, function(data){
-                var r = data['result']['result'].toString() ;
-                var reg_text = data['result']['reg_text'].toString() ;
-                while(r.search('\n') != -1 )
+            }, function(data1){
+                for(var k=0 ;k < data1['result'].length; k++)
                 {
-                    r = r.replace('\n','<br/>');
+                    var r = data1['result'][k]['result'].toString() ; 
+                    while(r.search('\n') != -1 )
+                    {
+                        r = r.replace('\n','<br/>');
+                    }
+                    document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = data1['result'][k]['reg_text'] + '<br/>' + r;
+                   
+                    var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
+                   for (var h in data1['result'][k]['highlight'])
+                   {
+                        // alert(data['result']['highlight'][h].start.toString() )
+                        selectAndHighlightRange('reg_result'+JSON.stringify(k+1),
+                        parseInt(data1['result'][k]['highlight'][h].start), 
+                        parseInt(data1['result'][k]['highlight'][h].end),
+                        colors[h%colors.length]
+                        )
+                   }
                 }
-                document.getElementById("reg_result").innerHTML = reg_text + '<br/>' + r;
-                var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
-               for (var h in data['result']['highlight'])
-               {
-                    // alert(data['result']['highlight'][h].start.toString() )
-                    selectAndHighlightRange('reg_result',
-                    parseInt(data['result']['highlight'][h].start), 
-                    parseInt(data['result']['highlight'][h].end),
-                    colors[h%colors.length]
-                    )
-               }
     
+                var errinfo = ""
+                for(var k=0 ;k < data1['result'].length; k++)
+                {
+                    errinfo += data1['result'][k]['errorMessage'].toString()
+                }
     
-               document.getElementById("info").innerHTML = data['result']['errorMessage'].toString() ;
-               if(data['result']['errorMessage'].toString().length <= 1)
+               document.getElementById("info").innerHTML =  errinfo;
+               if(errinfo.length <= 3)
                {
-                document.getElementById("info").innerHTML = "Finish processing!"
+                    document.getElementById("info").innerHTML = "Finish processing!"
                }
             });
 
