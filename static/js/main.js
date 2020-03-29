@@ -116,7 +116,7 @@ $(document).ready(function() {
                 {
                     r = r.replace('\n','<br/>');
                 }
-                document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = reg_text + '<br/>' + r;
+                document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = '<b>'+ data1['result'][k]['description'] +'</b>' +'<br/>'+ reg_text + '<br/>' + r + '<br/>' + '<br/>';
                
                 var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
                for (var h in data1['result'][k]['highlight'])
@@ -233,7 +233,7 @@ function bindPaste(){
                     {
                         r = r.replace('\n','<br/>');
                     }
-                    document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = data1['result'][k]['reg_text'] + '<br/>' + r;
+                    document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = '<b>'+ data1['result'][k]['description'] +'</b>' +'<br/>'+ data1['result'][k]['reg_text'] + '<br/>' + r + '<br/>'+'<br/>';
                    
                     var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
                    for (var h in data1['result'][k]['highlight'])

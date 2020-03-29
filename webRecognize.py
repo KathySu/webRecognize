@@ -1,5 +1,17 @@
 # pip3 install flask
 
+# 1, Download visual studio code at https://code.visualstudio.com/  and then insall
+# 2, Install extension  python whose authon is microsoft
+# 3, Download python at https://www.python.org/downloads/ Python 3.8.1 and then install
+# 4, test if python is install sucessfully by typing python3 -m tkinter, you will see a small windows if installed sucessfully
+# 5, install pillow      by typing        pip3 install pillow
+# 6, install pytesseract by typing        pip3 install pytesseract 
+# 7, install tesseract   by typing        brew install tesseract
+# 8, if has not install brew, install it by typing 
+#/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+
+
 import re
 import base64
 from flask import Flask, jsonify, render_template, request
@@ -18,7 +30,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 dirDict = {'north': 'N', 'south': 'S', 'west': 'W', 'east': 'E'}
 
-def search(regex, text):
+def search(regex, text, description):
     result = ""
     errorMessage = ""
 
@@ -94,7 +106,7 @@ def search(regex, text):
             feet = matches.group('feet')
 
         result = result + "DD " + dir1 + " " + degrees + "-" + minutes + "-" + seconds + " " + dir2 + " " + feet + '\n'
-    return {'result' : result, 'highlight' : resultList, 'reg_text': text, 'errorMessage':errorMessage}
+    return {'result' : result, 'highlight' : resultList, 'reg_text': text, 'errorMessage':errorMessage, 'description': description}
 
 @app.route('/')
 def index():
@@ -104,10 +116,45 @@ def index():
 def recognize():
     reg_text = request.args.get('reg_text', '')
     arrayOfResult = []
-    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", reg_text)
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text, 
+    "Format1-A: North/East/South/West 00 Degrees 00 Minutes 00 Seconds North/East/South/West  00.00 feet")
+    arrayOfResult.append(result)
+    
+    result = search( r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text, 
+    "Format1-A does not deal with ()")
     arrayOfResult.append(result)
 
-    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", reg_text)
+    result = search(r"\W+(?P<dir1>North|South|West|East)\W+(?:.|\n)*?\((?P<degrees>\d+.?\d+?)?\)\W+?degrees?(?:.|\n)*?\((?P<minutes>\d+.?\d+?)?\)\W+?minutes?((?:.|\n){1,16}\((?P<seconds>\d+.?\d+?)?\)\W+seconds)?\W+(?P<dir2>North|South|West|East)\W+(?:(?:.|\n)*?\((?P<feet>\d+.?\d+.?\d+?)?\))\W+feet", text, 
+    "Format1-B North/East/South/West (00) degrees (00)  minutes (00) seconds North/East/South/West  Two Hundred Forty-two and Twenty-three Hundredths (242.23) feet")
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+deg?\W+((?P<minutes>\d+)\W+min?\W+)?((?P<seconds>\d+)\W+sec?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text,
+    "Format1-C: North/East/South/West 00 deg 00 min 00 sec North/East/South/West")
+    arrayOfResult.append(result)
+
+    result = search( r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[0-9]?[0-9])\W+?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+(?:\.|\,)?\d+?(?:\.|\,)?(\d+)?).*?\W+feet", text,
+    """Format 2 North/East/South/West 00°00’00’’ North/East/South/West""")
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[?0-9]?[?0-9])?\W+?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+\d+\W?\d+).*?(feet|ft)", text,
+    "Format 2 does not deal with ()")
+    arrayOfResult.append(result)   
+
+    result = search( r"\W+(?P<dir1>S|N|W|E)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[?0-9]?[?0-9])?\W+?(?P<dir2>S|N|W|E)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text,
+    """Format 3-A  N/E/S/W 00°00’00’’ N/E/S/W feet """)
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>S|N|W|E)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[?0-9]?[?0-9])?\W+?(?P<dir2>S|N|W|E)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text,
+    """Format 3-B  N/E/S/W 00°00’00’’ N/E/S/W feet """)
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W(?P<minutes>[0-9]?[0-9])?\W+?(?P<seconds>[0-9]?[0-9])?\W+?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+.?(\d+)?\.?(\d+)?)", text,
+    """Format 4-A North/East/South/West 00 degrees 00’00’’ North/East/South/West""")
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>S|N|W|E)\W+(?P<degrees>\d+)\W+degrees?\W(?P<Minutes>[0-9]?[0-9])?\W+?(?P<seconds>[0-9]?[0-9])?\W+?(?P<dir2>S|N|W|E)(?:.|\n)*?(?P<feet>\d+\W?\d+\W+\d+)", text,
+    """Format 4-B N/E/S/W 00 degrees 00’00’’ N/E/S/W""")
     arrayOfResult.append(result)
 
     return jsonify(result = arrayOfResult)
@@ -131,14 +178,45 @@ def _recognizeImage():
     text = pytesseract.image_to_string(Image.open(imagePath))
     print ("recognize result", text)
     arrayOfResult = []
-    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text)
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text, 
+    "Format1-A: North/East/South/West 00 Degrees 00 Minutes 00 Seconds North/East/South/West  00.00 feet")
     arrayOfResult.append(result)
     
-
-    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text)
+    result = search( r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text, 
+    "Format1-A does not deal with ()")
     arrayOfResult.append(result)
 
+    result = search(r"\W+(?P<dir1>North|South|West|East)\W+(?:.|\n)*?\((?P<degrees>\d+.?\d+?)?\)\W+?degrees?(?:.|\n)*?\((?P<minutes>\d+.?\d+?)?\)\W+?minutes?((?:.|\n){1,16}\((?P<seconds>\d+.?\d+?)?\)\W+seconds)?\W+(?P<dir2>North|South|West|East)\W+(?:(?:.|\n)*?\((?P<feet>\d+.?\d+.?\d+?)?\))\W+feet", text, 
+    "Format1-B North/East/South/West (00) degrees (00)  minutes (00) seconds North/East/South/West  Two Hundred Forty-two and Twenty-three Hundredths (242.23) feet")
+    arrayOfResult.append(result)
 
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+deg?\W+((?P<minutes>\d+)\W+min?\W+)?((?P<seconds>\d+)\W+sec?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text,
+    "Format1-C: North/East/South/West 00 deg 00 min 00 sec North/East/South/West")
+    arrayOfResult.append(result)
+
+    result = search( r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[0-9]?[0-9])\W+?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+(?:\.|\,)?\d+?(?:\.|\,)?(\d+)?).*?\W+feet", text,
+    """Format 2 North/East/South/West 00°00’00’’ North/East/South/West""")
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[?0-9]?[?0-9])?\W+?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+\d+\W?\d+).*?(feet|ft)", text,
+    "Format 2 does not deal with ()")
+    arrayOfResult.append(result)   
+
+    result = search( r"\W+(?P<dir1>S|N|W|E)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[?0-9]?[?0-9])?\W+?(?P<dir2>S|N|W|E)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text,
+    """Format 3-A  N/E/S/W 00°00’00’’ N/E/S/W feet """)
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>S|N|W|E)\W+(?P<degrees>[0-9]?[0-9])\W+?(?P<minutes>[0-9]?[0-9])\W+?(?P<seconds>[?0-9]?[?0-9])?\W+?(?P<dir2>S|N|W|E)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+)\W+feet", text,
+    """Format 3-B  N/E/S/W 00°00’00’’ N/E/S/W feet """)
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W(?P<minutes>[0-9]?[0-9])?\W+?(?P<seconds>[0-9]?[0-9])?\W+?(?P<dir2>South|North|West|East)(?:.|\n)*?(?P<feet>\d+.?(\d+)?\.?(\d+)?)", text,
+    """Format 4-A North/East/South/West 00 degrees 00’00’’ North/East/South/West""")
+    arrayOfResult.append(result)
+
+    result = search(r"\W+(?P<dir1>S|N|W|E)\W+(?P<degrees>\d+)\W+degrees?\W(?P<Minutes>[0-9]?[0-9])?\W+?(?P<seconds>[0-9]?[0-9])?\W+?(?P<dir2>S|N|W|E)(?:.|\n)*?(?P<feet>\d+\W?\d+\W+\d+)", text,
+    """Format 4-B N/E/S/W 00 degrees 00’00’’ N/E/S/W""")
+    arrayOfResult.append(result)
 
     return jsonify(result = arrayOfResult)
 
