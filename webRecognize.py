@@ -103,10 +103,14 @@ def index():
 @app.route('/_recognize')
 def recognize():
     reg_text = request.args.get('reg_text', '')
-    
+    arrayOfResult = []
     result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", reg_text)
+    arrayOfResult.append(result)
 
-    return jsonify(result = result)
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", reg_text)
+    arrayOfResult.append(result)
+
+    return jsonify(result = arrayOfResult)
 
 @app.route('/_recognizeImage')
 def _recognizeImage():
@@ -126,8 +130,17 @@ def _recognizeImage():
     print ("begin to recognize\n")
     text = pytesseract.image_to_string(Image.open(imagePath))
     print ("recognize result", text)
+    arrayOfResult = []
     result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text)
-    return jsonify(result = result)
+    arrayOfResult.append(result)
+    
+
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text)
+    arrayOfResult.append(result)
+
+
+
+    return jsonify(result = arrayOfResult)
 
 
 @app.route('/reg1')
