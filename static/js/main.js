@@ -112,22 +112,9 @@ $(document).ready(function() {
 
     $('#recognize').click(function() {
         
-        reg_expression = "";
-        if (currentTabIndex == 1 )
-            reg_expression = document.getElementById("reg_expression1").value
-        else if(currentTabIndex == 2)
-            reg_expression = document.getElementById("reg_expression2").value
-        else if(currentTabIndex == 3)
-            reg_expression = document.getElementById("reg_expression3").value
 
         reg_text = document.getElementById("reg_text").value;
         
-
-        if (reg_expression.length == 0 ) 
-        {
-            document.getElementById("info").innerHTML = "Please input regular expression!"
-            return ;
-        }
 
         if (reg_text.length == 0 ) 
         {
@@ -138,7 +125,6 @@ $(document).ready(function() {
  
         document.getElementById("info").innerHTML = "Begin to process!"
         $.getJSON($SCRIPT_ROOT + '_recognize', {
-            reg_expression  :   reg_expression,
             reg_text        :   reg_text
         }, function(data){
 

@@ -16,10 +16,6 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 
-
-
-
-
 dirDict = {'North': 'N', 'South': 'S', 'West': 'W', 'East': 'E'}
 
 def search(regex, text):
@@ -99,9 +95,6 @@ def search(regex, text):
         result = result + "DD " + dir1 + " " + degrees + "-" + minutes + "-" + seconds + " " + dir2 + " " + feet + '\n'
     return {'result' : result, 'highlight' : resultList, 'reg_text': text, 'errorMessage':errorMessage}
 
-
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -109,23 +102,20 @@ def index():
 
 @app.route('/_recognize')
 def recognize():
-    reg_expression = request.args.get('reg_expression', '')
     reg_text = request.args.get('reg_text', '')
     
-    result = search(reg_expression, reg_text)
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", reg_text)
 
     return jsonify(result = result)
 
 @app.route('/_recognizeImage')
 def _recognizeImage():
     print ("_recognizeImage\n")
-    reg_expression = request.args.get('reg_expression', '')
     base64_str = request.args.get('base64_str', '')
     base64_byte = base64_str.encode()
     missing_padding = 4 - len(base64_byte) % 4
     if missing_padding:
         base64_byte += b'=' * missing_padding
-
 
     image = base64.b64decode(base64_byte)    
 
@@ -136,7 +126,7 @@ def _recognizeImage():
     print ("begin to recognize\n")
     text = pytesseract.image_to_string(Image.open(imagePath))
     print ("recognize result", text)
-    result = search(reg_expression, text)
+    result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text)
     return jsonify(result = result)
 
 
