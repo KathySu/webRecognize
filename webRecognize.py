@@ -105,7 +105,7 @@ def search(regex, text, description):
         else:
             feet = matches.group('feet')
 
-        result = result + "DD " + dir1 + " " + degrees + "-" + minutes + "-" + seconds + " " + dir2 + " " + feet + '\n'
+        result = result + "DD " + dir1 + degrees + "-" + minutes + "-" + seconds + dir2 + " " + feet + '\n'
     return {'result' : result, 'highlight' : resultList, 'reg_text': text, 'errorMessage':errorMessage, 'description': description}
 
 @app.route('/')
@@ -114,7 +114,7 @@ def index():
 
 @app.route('/_recognize')
 def recognize():
-    reg_text = request.args.get('reg_text', '')
+    text = request.args.get('reg_text', '')
     arrayOfResult = []
 
     result = search(r"\W+(?P<dir1>South|North|West|East)\W+(?P<degrees>\d+)\W+degrees?\W+((?P<minutes>\d+)\W+minutes?\W+)?((?P<seconds>\d+)\W+seconds?\W+)?(?P<dir2>South|North|West|East)(?P<omit>(?:.|\n)*?\((?:.|\n)*?\))?(?:.|\n)*?(?P<feet>\d+.?\d+?.?\d+?)\W+feet", text, 

@@ -118,13 +118,14 @@ $(document).ready(function() {
                 }
                 document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = '<b>'+ data1['result'][k]['description'] +'</b>' +'<br/>'+ reg_text + '<br/>' + r + '<br/>' + '<br/>';
                
+                var des = data1['result'][k]['description'];
                 var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
                for (var h in data1['result'][k]['highlight'])
                {
                     // alert(data['result']['highlight'][h].start.toString() )
                     selectAndHighlightRange('reg_result'+JSON.stringify(k+1),
-                    parseInt(data1['result'][k]['highlight'][h].start), 
-                    parseInt(data1['result'][k]['highlight'][h].end),
+                    parseInt(data1['result'][k]['highlight'][h].start + des.length), 
+                    parseInt(data1['result'][k]['highlight'][h].end +des.length),
                     colors[h%colors.length]
                     )
                }
@@ -235,13 +236,14 @@ function bindPaste(){
                     }
                     document.getElementById("reg_result"+JSON.stringify(k+1)).innerHTML = '<b>'+ data1['result'][k]['description'] +'</b>' +'<br/>'+ data1['result'][k]['reg_text'] + '<br/>' + r + '<br/>'+'<br/>';
                    
+                    var description = data1['result'][k]['description'] ;  
                     var colors = ["red", "yellow", "Aquamarine", "Coral", "HotPink", "LightPink"];
                    for (var h in data1['result'][k]['highlight'])
                    {
                         // alert(data['result']['highlight'][h].start.toString() )
                         selectAndHighlightRange('reg_result'+JSON.stringify(k+1),
-                        parseInt(data1['result'][k]['highlight'][h].start), 
-                        parseInt(data1['result'][k]['highlight'][h].end),
+                        parseInt(data1['result'][k]['highlight'][h].start + description.length), 
+                        parseInt(data1['result'][k]['highlight'][h].end+ description.length),
                         colors[h%colors.length]
                         )
                    }
